@@ -49,14 +49,15 @@ export function initMixin (Vue: Class<Component>) {
     }
     // expose real self
     vm._self = vm
-    initLifecycle(vm)
-    initEvents(vm)
-    initRender(vm)
-    callHook(vm, 'beforeCreate')
+    initLifecycle(vm) //初始化声明周期 给当前实例添加$parent $children $refs $root 
+    initEvents(vm)    //处理父组件传递过来的事件监听器
+    initRender(vm)    //$slots $scopedSlots _c $createElement  make $attrs & $listeners  reactive 
+    callHook(vm, 'beforeCreate') // change lifecycle state to beforeCreate  by manually invoke the method
+    //为什么先inject 再provide ？ 因为我要先把别人给我的数据拿到 我再给我的子组件（如果有子组件的话 ） 顺序不可以变
     initInjections(vm) // resolve injections before data/props
-    initState(vm)
-    initProvide(vm) // resolve provide after data/props
-    callHook(vm, 'created')
+    initState(vm) //init props methods data computed watch
+    initProvide(vm) // resolve provide after data/props 是函数的话 调用一下再赋值 否则直接赋值
+    callHook(vm, 'created') //change lifecycle state to created by manually invoke the method
 
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
@@ -66,6 +67,7 @@ export function initMixin (Vue: Class<Component>) {
     }
 
     if (vm.$options.el) {
+      //为什么写el不用写$mount? 因为代码帮你做了
       vm.$mount(vm.$options.el)
     }
   }
